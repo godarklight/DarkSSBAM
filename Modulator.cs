@@ -16,8 +16,10 @@ namespace DarkSSBAM
         bool toRadioReady = false;
         double[] toRadioBuffer = new double[AudioDriver.CHUNK_SIZE];
         double phase = 0.0;
-        double VOICE_GAIN = 0.4;
+        double VOICE_GAIN = 0.5;
         double CARRIER_GAIN = 0.1;
+        double FINAL_GAIN = 0.75;
+        double IF_FREQUENCY = 150.0;
 
 
         public Modulator()
@@ -86,8 +88,8 @@ namespace DarkSSBAM
                         double imaginary = Math.Sin(phase) * ifft[j].Imaginary;
                         double upperSideband = VOICE_GAIN * (real + imaginary);
                         double insertCarrier = CARRIER_GAIN * Math.Cos(phase);
-                        toRadioBuffer[i] = upperSideband + insertCarrier;
-                        phase += 100.0 * Math.Tau * (1.0 / 48000.0);
+                        toRadioBuffer[i] = FINAL_GAIN * (upperSideband + insertCarrier);
+                        phase += IF_FREQUENCY * Math.Tau * (1.0 / 48000.0);
                         if (phase > Math.Tau)
                         {
                             phase -= Math.Tau;
